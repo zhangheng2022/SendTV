@@ -14,7 +14,7 @@ class _MobileHomePageState extends State<MobileHomePage> {
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[Text('当前设备地址:'), const SizedBox(height: 20)],
+          children: <Widget>[Text('当前设备地址:1111'), const SizedBox(height: 20)],
         ),
       ),
     );

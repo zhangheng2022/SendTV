@@ -8,6 +8,7 @@ import 'package:send_tv/config/theme_config.dart';
 
 Future<void> main() async {
   final initInfo = await Screen.initialize();
+  Log.t(initInfo);
   runApp(SendTVApp(initInfo: initInfo));
 }
 
@@ -21,9 +22,7 @@ class SendTVApp extends StatelessWidget {
     return MaterialApp(
       title: 'SendTVApp',
       theme: AppTheme.dark,
-      home: initInfo == DeviceType.tv || initInfo == DeviceType.web
-          ? const TVHomePage()
-          : const MobileHomePage(),
+      home: const TVHomePage(),
     );
   }
 }
