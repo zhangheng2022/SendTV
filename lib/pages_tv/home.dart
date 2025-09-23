@@ -23,10 +23,10 @@ class _TVHomePageState extends State<TVHomePage> {
   }
 
   Future<void> init() async {
-    List ips = await server.getLocalIPs();
+    String? ip = await server.getLocalIP();
 
     setState(() {
-      ip = ips.join("\n");
+      ip = ip;
     });
   }
 

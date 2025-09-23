@@ -1,40 +1,39 @@
 import 'dart:io';
-import 'dart:convert';
-
 import 'package:send_tv/utils/logger.dart';
 
 class NetworkService {
   HttpServer? _server;
+  int? _runningPort;
 
-  /// 路由表：key = 路径，例如 "/hello"
-  /// value = 处理函数
   final Map<String, Function(HttpRequest)> _getRoutes = {};
   final Map<String, Function(HttpRequest)> _postRoutes = {};
 
-  /// 是否正在运行
   bool get isRunning => _server != null;
+  int? get currentPort => _runningPort;
 
-  /// 启动 HTTP 服务
-  Future<void> start({int port = 8080}) async {
+  /// 启动服务并返回端口
+  Future<int> start({int port = 53331}) async {
     if (isRunning) {
-      Log.w("⚠️ HTTP 服务已经在运行，无需重复启动！");
-      return;
+      Log.w("⚠️ HTTP 服务已经在运行");
+      return _runningPort!;
     }
 
-    _server = await HttpServer.bind(InternetAddress.anyIPv4, port);
-    Log.d("✅ HTTP 服务已启动: http://${_server!.address.address}:$port");
+    final availablePort = await _findAvailablePort(port);
+    _server = await HttpServer.bind(InternetAddress.anyIPv4, availablePort);
+    _runningPort = availablePort;
+
+    Log.d("✅ HTTP 服务启动: 端口 $availablePort");
 
     _server!.listen((HttpRequest request) async {
       final method = request.method;
       final path = request.uri.path;
-      Log.d("📩 收到请求: [$method] $path");
+      Log.d("📩 请求: [$method] $path");
       try {
         if (method == 'GET' && _getRoutes.containsKey(path)) {
           await _getRoutes[path]!(request);
         } else if (method == 'POST' && _postRoutes.containsKey(path)) {
           await _postRoutes[path]!(request);
         } else {
-          // 路由不存在
           request.response
             ..statusCode = HttpStatus.notFound
             ..write("404 Not Found: $path")
@@ -47,41 +46,95 @@ class NetworkService {
           ..close();
       }
     });
+
+    return _runningPort!;
   }
 
-  /// 停止 HTTP 服务
   Future<void> stop() async {
     if (!isRunning) {
-      Log.w("⚠️ HTTP 服务未启动，无需停止！");
+      Log.w("⚠️ 服务未运行");
       return;
     }
     await _server?.close(force: true);
     _server = null;
+    _runningPort = null;
     Log.w("🛑 HTTP 服务已停止");
   }
 
-  /// 注册 GET 路由
   void get(String path, Function(HttpRequest) handler) {
     _getRoutes[path] = handler;
   }
 
-  /// 注册 POST 路由
   void post(String path, Function(HttpRequest) handler) {
     _postRoutes[path] = handler;
   }
 
-  /// 获取本地局域网 IP（过滤掉 127.0.0.1 和 IPv6）
-  Future<List<String>> getLocalIPs() async {
+  /// 获取一个可用局域网 IP
+  Future<String?> getLocalIP() async {
+    if (_runningPort == null) return null;
+
     final interfaces = await NetworkInterface.list(
       includeLoopback: false,
       type: InternetAddressType.IPv4,
     );
-    final ips = <String>[];
+
     for (var interface in interfaces) {
+      final name = interface.name.toLowerCase();
+      if (_isVirtualAdapter(name)) continue;
+
       for (var addr in interface.addresses) {
-        ips.add(addr.address);
+        final ip = addr.address;
+        if (_isPrivateIP(ip) && await _testReachable(ip, _runningPort!)) {
+          return ip;
+        }
       }
     }
-    return ips;
+    return null;
+  }
+
+  /// 判断是否虚拟网卡
+  bool _isVirtualAdapter(String name) {
+    return name.contains("vmnet") ||
+        name.contains("vbox") ||
+        name.contains("docker") ||
+        name.contains("tun") ||
+        name.contains("tap");
+  }
+
+  /// 判断是否内网IP
+  bool _isPrivateIP(String ip) {
+    return ip.startsWith("192.") ||
+        ip.startsWith("10.") ||
+        ip.startsWith("172.");
+  }
+
+  Future<bool> _testReachable(String ip, int port) async {
+    try {
+      final socket = await Socket.connect(
+        ip,
+        port,
+        timeout: const Duration(milliseconds: 500),
+      );
+      socket.destroy();
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  Future<int> _findAvailablePort(int startPort) async {
+    var port = startPort;
+    while (true) {
+      try {
+        final socket = await ServerSocket.bind(
+          InternetAddress.loopbackIPv4,
+          port,
+        );
+        await socket.close();
+        return port;
+      } catch (_) {
+        port++;
+      }
+    }
   }
 }
