@@ -17,7 +17,6 @@ class _TVHomePageState extends State<TVHomePage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     init();
   }
@@ -32,26 +31,42 @@ class _TVHomePageState extends State<TVHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          TVFilledButton(
-            autofocus: false,
-            child: const Text('开启服务'),
-            onPressed: () {
-              print('按钮被点击了');
-            },
-          ),
-          Text(ip),
-          // TVTextButton(
-          //   child: const Text('文本按钮1'),
-          //   onPressed: () {
-          //     print('文本按钮被点击了');
-          //   },
-          // ),
-        ],
+    return Scaffold(
+      appBar: AppBar(
+        title: Row(
+          children: [
+            Image.asset('assets/logos/logo.png', height: 32),
+            const SizedBox(width: 8),
+            const Text('Send TV'),
+          ],
+        ),
+        actions: [TVFilledButton(child: Text('设置'), onPressed: () async {})],
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text("当前IP地址：$ip"),
+            const SizedBox(height: 20),
+            TVFilledButton(
+              child: Text('ceshi'),
+              onPressed: () async {
+                String? ip = await server.getLocalIP();
+                setState(() {
+                  ip = ip;
+                });
+              },
+            ),
+            const SizedBox(height: 20),
+            TVTextButton(
+              child: Text('ceshi'),
+              onPressed: () {
+                // 退出应用
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
