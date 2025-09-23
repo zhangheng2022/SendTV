@@ -37,6 +37,23 @@ android {
             signingConfig = signingConfigs.getByName("debug")
         }
     }
+
+    // 定义一个维度
+    flavorDimensions += "platform"
+
+    productFlavors {
+        // 默认使用 mobile
+        create("mobile") {
+            dimension = "platform"
+            applicationIdSuffix = ".mobile"
+            versionNameSuffix = "-mobile"
+        }
+        create("tv") {
+            dimension = "platform"
+            applicationIdSuffix = ".tv"
+            versionNameSuffix = "-tv"
+        }
+    }
 }
 
 flutter {

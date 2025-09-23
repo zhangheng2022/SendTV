@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:send_tv/model/device_info_result.dart';
 import 'package:send_tv/utils/logger.dart';
 import 'package:send_tv/screen.dart';
-import 'package:send_tv/pages/tv/home.dart';
 import 'package:send_tv/pages/mobile/home.dart';
 import 'package:send_tv/config/theme_config.dart';
 
@@ -22,7 +21,7 @@ class SendTVApp extends StatelessWidget {
     return MaterialApp(
       title: 'SendTVApp',
       theme: AppTheme.dark,
-      home: const TVHomePage(),
+      home: const MobileHomePage(),
     );
   }
 }

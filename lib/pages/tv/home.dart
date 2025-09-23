@@ -1,49 +1,14 @@
 import 'package:flutter/material.dart';
 
-class TVHomePage extends StatelessWidget {
+class TVHomePage extends StatefulWidget {
   const TVHomePage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: Center(
-        // 让一组按钮支持方向键遍历
-        child: FocusTraversalGroup(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: const [
-              TVFocusableButton(title: "播放"),
-              SizedBox(width: 20),
-              TVFocusableButton(title: "暂停"),
-              SizedBox(width: 20),
-              TVFocusableButton(title: "停止"),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+  State<TVHomePage> createState() => _TVHomePageState();
 }
 
-class TVFocusableButton extends StatefulWidget {
-  final String title;
-  final VoidCallback? onTap;
-
-  const TVFocusableButton({super.key, required this.title, this.onTap});
-
-  @override
-  State<TVFocusableButton> createState() => _TVFocusableButtonState();
-}
-
-class _TVFocusableButtonState extends State<TVFocusableButton> {
+class _TVHomePageState extends State<TVHomePage> {
   final FocusNode _focusNode = FocusNode();
-
-  @override
-  void dispose() {
-    _focusNode.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +17,7 @@ class _TVFocusableButtonState extends State<TVFocusableButton> {
       autofocus: false,
       onFocusChange: (_) => setState(() {}),
       child: GestureDetector(
-        onTap: widget.onTap,
+        onTap: () {},
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
@@ -65,7 +30,7 @@ class _TVFocusableButtonState extends State<TVFocusableButton> {
             ),
           ),
           child: Text(
-            widget.title,
+            '123123111111',
             style: const TextStyle(color: Colors.white, fontSize: 18),
           ),
         ),
