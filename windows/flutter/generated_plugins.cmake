@@ -4,7 +4,6 @@
 
 list(APPEND FLUTTER_PLUGIN_LIST
   connectivity_plus
-  is_tv
 )
 
 list(APPEND FLUTTER_FFI_PLUGIN_LIST

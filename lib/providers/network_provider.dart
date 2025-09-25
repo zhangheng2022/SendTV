@@ -1,16 +1,20 @@
 import 'package:flutter/foundation.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:send_tv/core/network/network_service.dart';
+import 'package:send_tv/core/network/udp_service.dart';
 import 'package:network_info_plus/network_info_plus.dart';
 
 class NetworkProvider extends ChangeNotifier {
   final NetworkService _service = NetworkService();
   final NetworkInfo _wifiInfo = NetworkInfo();
+  final UDPServer _udpServer = UDPServer();
 
   bool get isRunning => _service.isRunning;
   String? _ip;
   String? get ip => _ip;
   int? get port => _service.currentPort;
+
+  UDPServer get udpServer => _udpServer;
 
   String? get serviceUrl =>
       (ip != null && port != null) ? "http://$ip:$port" : null;
@@ -29,6 +33,7 @@ class NetworkProvider extends ChangeNotifier {
   /// 启动服务
   Future<void> start() async {
     await _service.start();
+    await _udpServer.start();
     _ip = await _wifiInfo.getWifiIP();
     notifyListeners();
   }

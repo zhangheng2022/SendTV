@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:send_tv/providers/network_provider.dart';
@@ -28,11 +30,20 @@ class _MobileHomePageState extends State<MobileHomePage> {
             FilledButton(
               child: const Text('修改端口'),
               onPressed: () {
-                print('按钮被点击了');
                 network.changePort(53338);
               },
             ),
             Text("服务地址: ${network.serviceUrl}"),
+            FilledButton(
+              onPressed: () {
+                network.udpServer.sendToAllClient(
+                  "Hello from Flutter!",
+                  InternetAddress(network.ip ?? ''),
+                  0,
+                );
+              },
+              child: const Text('广播udp'),
+            ),
           ],
         ),
       ),

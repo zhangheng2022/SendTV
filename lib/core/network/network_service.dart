@@ -80,6 +80,7 @@ class NetworkService {
         await socket.close();
         return port;
       } catch (_) {
+        Log.d("端口 $port 被占用，尝试下一个端口...");
         port++;
       }
     }

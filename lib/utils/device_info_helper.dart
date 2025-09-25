@@ -1,7 +1,6 @@
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:send_tv/model/device_info_result.dart';
-import 'package:is_tv/is_tv.dart';
 
 Future<DeviceInfoResult> getDeviceInfo() async {
   final plugin = DeviceInfoPlugin();
@@ -31,11 +30,6 @@ Future<DeviceInfoResult> getDeviceInfo() async {
         final deviceInfo = await plugin.androidInfo;
         deviceModel = deviceInfo.model;
         androidSdkInt = deviceInfo.version.sdkInt;
-        // ✅ 使用 is_tv 库判断是否为 Android TV
-        final tv = await IsTV().check() ?? false;
-        if (tv) {
-          deviceType = DeviceType.tv;
-        }
 
         break;
       case TargetPlatform.iOS:
