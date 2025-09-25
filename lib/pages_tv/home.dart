@@ -11,23 +11,8 @@ class TVHomePage extends StatefulWidget {
 }
 
 class _TVHomePageState extends State<TVHomePage> {
-  final server = NetworkService();
-
-  String ip = "未知";
-
-  @override
-  void initState() {
-    super.initState();
-    init();
-  }
-
-  Future<void> init() async {
-    String? ip = await server.getLocalIP();
-
-    setState(() {
-      ip = ip;
-    });
-  }
+  final PageController _controller = PageController();
+  int _currentIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -36,38 +21,73 @@ class _TVHomePageState extends State<TVHomePage> {
         title: Row(
           children: [
             Image.asset('assets/logos/logo.png', height: 32),
-            const SizedBox(width: 8),
+            const SizedBox(width: 10),
             const Text('Send TV'),
           ],
         ),
-        actions: [TVFilledButton(child: Text('设置'), onPressed: () async {})],
+        actions: [
+          TVFilledButton(
+            autofocus: false,
+            icon: Icon(Icons.settings),
+            onPressed: () async {},
+            child: Text('设置'),
+          ),
+          const SizedBox(width: 20),
+        ],
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text("当前IP地址：$ip"),
-            const SizedBox(height: 20),
-            TVFilledButton(
-              child: Text('ceshi'),
-              onPressed: () async {
-                String? ip = await server.getLocalIP();
-                setState(() {
-                  ip = ip;
-                });
-              },
+      body: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(20),
+            child: Row(
+              spacing: 12,
+              children: [
+                TVFilledButton(
+                  autofocus: true,
+                  child: Text('主页'),
+                  onPressed: () async {},
+                  onFocusChange: (focus) {
+                    _controller.jumpToPage(0);
+                    setState(() => _currentIndex = 0);
+                  },
+                ),
+                TVFilledButton(
+                  child: Text('文件'),
+                  onPressed: () async {},
+                  onFocusChange: (focus) {
+                    _controller.jumpToPage(1);
+                    setState(() => _currentIndex = 1);
+                  },
+                ),
+              ],
             ),
-            const SizedBox(height: 20),
-            TVTextButton(
-              child: Text('ceshi'),
-              onPressed: () {
-                // 退出应用
-                Navigator.of(context).pop();
-              },
+          ),
+          Expanded(
+            child: PageView(
+              controller: _controller,
+              onPageChanged: (index) => setState(() => _currentIndex = index),
+              children: [
+                FirstView(),
+                const Center(child: Text('文件 页面')),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
+  }
+}
+
+class FirstView extends StatefulWidget {
+  const FirstView({super.key});
+
+  @override
+  State<FirstView> createState() => _FirstViewState();
+}
+
+class _FirstViewState extends State<FirstView> {
+  @override
+  Widget build(BuildContext context) {
+    return Center(child: Text('Home Page'));
   }
 }
