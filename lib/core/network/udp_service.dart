@@ -14,7 +14,7 @@ class UDPServer {
   Future<void> start({int port = 53331}) async {
     try {
       _socket = await RawDatagramSocket.bind(InternetAddress.anyIPv4, port);
-      Log.d(_socket);
+      _socket?.broadcastEnabled = true;
       Log.d('UDP服务器已启动，监听端口: $port');
       // 监听接收数据
       _subscription = _socket?.listen((event) {
@@ -68,7 +68,7 @@ class UDPServer {
     if (_socket == null) return Log.e('socket为空：$_socket');
     final data = utf8.encode(message);
     // 注意：这里简化处理，实际应该记录端口号
-    _socket?.send(data, InternetAddress(localIP), 53331); // 端口需要实际记录
+    _socket?.send(data, InternetAddress("255.255.255.255"), 53331); // 端口需要实际记录
     Log.d('广播消息: $message');
   }
 
