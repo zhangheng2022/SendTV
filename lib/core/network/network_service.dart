@@ -69,59 +69,6 @@ class NetworkService {
     _postRoutes[path] = handler;
   }
 
-  /// 获取一个可用局域网 IP
-  Future<String?> getLocalIP() async {
-    if (_runningPort == null) return null;
-
-    final interfaces = await NetworkInterface.list(
-      includeLoopback: false,
-      type: InternetAddressType.IPv4,
-    );
-
-    for (var interface in interfaces) {
-      final name = interface.name.toLowerCase();
-      if (_isVirtualAdapter(name)) continue;
-
-      for (var addr in interface.addresses) {
-        final ip = addr.address;
-        if (_isPrivateIP(ip) && await _testReachable(ip, _runningPort!)) {
-          return ip;
-        }
-      }
-    }
-    return null;
-  }
-
-  /// 判断是否虚拟网卡
-  bool _isVirtualAdapter(String name) {
-    return name.contains("vmnet") ||
-        name.contains("vbox") ||
-        name.contains("docker") ||
-        name.contains("tun") ||
-        name.contains("tap");
-  }
-
-  /// 判断是否内网IP
-  bool _isPrivateIP(String ip) {
-    return ip.startsWith("192.") ||
-        ip.startsWith("10.") ||
-        ip.startsWith("172.");
-  }
-
-  Future<bool> _testReachable(String ip, int port) async {
-    try {
-      final socket = await Socket.connect(
-        ip,
-        port,
-        timeout: const Duration(milliseconds: 500),
-      );
-      socket.destroy();
-      return true;
-    } catch (_) {
-      return false;
-    }
-  }
-
   Future<int> _findAvailablePort(int startPort) async {
     var port = startPort;
     while (true) {

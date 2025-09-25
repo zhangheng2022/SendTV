@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:send_tv/core/network/network_service.dart';
 import 'package:send_tv/providers/network_provider.dart';
 
 class MobileHomePage extends StatefulWidget {
@@ -11,21 +10,9 @@ class MobileHomePage extends StatefulWidget {
 }
 
 class _MobileHomePageState extends State<MobileHomePage> {
-  final server = NetworkService();
-
-  String ip = "未知";
-
-  Future<void> init() async {
-    String? ip = await server.getLocalIP();
-    setState(() {
-      ip = ip;
-    });
-  }
-
   @override
   void initState() {
     super.initState();
-    init();
   }
 
   @override

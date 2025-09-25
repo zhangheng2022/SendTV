@@ -1,9 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:send_tv/core/network/network_service.dart';
+import 'package:network_info_plus/network_info_plus.dart';
 
 class NetworkProvider extends ChangeNotifier {
   final NetworkService _service = NetworkService();
+  final NetworkInfo _wifiInfo = NetworkInfo();
 
   bool get isRunning => _service.isRunning;
   String? _ip;
@@ -27,20 +29,19 @@ class NetworkProvider extends ChangeNotifier {
   /// 启动服务
   Future<void> start() async {
     await _service.start();
-    _ip = await _service.getLocalIP();
+    _ip = await _wifiInfo.getWifiIP();
     notifyListeners();
   }
 
   /// 停止服务
   Future<void> stop() async {
     await _service.stop();
-    _ip = null;
     notifyListeners();
   }
 
   /// 手动刷新IP
   Future<void> refreshIP() async {
-    _ip = await _service.getLocalIP();
+    _ip = await _wifiInfo.getWifiIP();
     notifyListeners();
   }
 
@@ -50,7 +51,6 @@ class NetworkProvider extends ChangeNotifier {
       await stop();
     }
     await _service.start(port: newPort);
-    _ip = await _service.getLocalIP();
     notifyListeners();
   }
 }
