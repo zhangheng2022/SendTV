@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:send_tv/core/network/network_service.dart';
 import 'package:send_tv/pages_tv/components/filled_button.dart';
 import 'package:send_tv/pages_tv/components/text_button.dart';
+import 'package:send_tv/providers/network_provider.dart';
 
 class TVHomePage extends StatefulWidget {
   const TVHomePage({super.key});
@@ -88,6 +90,7 @@ class FirstView extends StatefulWidget {
 class _FirstViewState extends State<FirstView> {
   @override
   Widget build(BuildContext context) {
-    return Center(child: Text('Home Page'));
+    final network = context.watch<NetworkProvider>();
+    return Center(child: Text('当前设备IP: ${network.ip}:${network.port}'));
   }
 }

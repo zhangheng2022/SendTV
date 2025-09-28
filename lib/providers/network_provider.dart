@@ -3,6 +3,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:send_tv/core/network/network_service.dart';
 import 'package:send_tv/core/network/udp_service.dart';
 import 'package:network_info_plus/network_info_plus.dart';
+import 'package:send_tv/utils/logger.dart';
 
 class NetworkProvider extends ChangeNotifier {
   final NetworkService _service = NetworkService();
@@ -32,10 +33,18 @@ class NetworkProvider extends ChangeNotifier {
 
   /// 启动服务
   Future<void> start() async {
-    await _service.start();
-    await _udpServer.start();
-    _ip = await _wifiInfo.getWifiIP();
-    notifyListeners();
+    try {
+      await _service.start();
+      await _udpServer.start();
+      _ip = await _wifiInfo.getWifiIP();
+      Log.d("Service started at $_ip");
+      notifyListeners();
+    } catch (e) {
+      Log.e("Failed to get WiFi IP: $e");
+      _ip = null;
+      notifyListeners();
+      return;
+    }
   }
 
   /// 停止服务
