@@ -68,10 +68,7 @@ class _TVHomePageState extends State<TVHomePage> {
             child: PageView(
               controller: _controller,
               onPageChanged: (index) => setState(() => _currentIndex = index),
-              children: [
-                FirstView(),
-                const Center(child: Text('文件 页面')),
-              ],
+              children: [FirstView(), const Center(child: Text('文件 页面'))],
             ),
           ),
         ],

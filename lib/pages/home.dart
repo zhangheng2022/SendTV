@@ -34,16 +34,7 @@ class _MobileHomePageState extends State<MobileHomePage> {
               },
             ),
             Text("服务地址: ${network.serviceUrl}"),
-            FilledButton(
-              onPressed: () {
-                network.udpServer.sendToAllClient(
-                  "Hello from Flutter!",
-                  InternetAddress(network.ip ?? ''),
-                  0,
-                );
-              },
-              child: const Text('广播udp'),
-            ),
+            FilledButton(onPressed: () {}, child: const Text('广播udp')),
           ],
         ),
       ),
