@@ -42,6 +42,7 @@ class NetworkProvider extends ChangeNotifier {
       AndroidDeviceInfo androidInfo = await _deviceInfo.androidInfo;
       String deviceName = androidInfo.model;
       _udpServer.startBroadcast(deviceName);
+
       _ip = await _wifiInfo.getWifiIP();
       Log.d("Service started at $_ip");
       notifyListeners();
@@ -49,7 +50,6 @@ class NetworkProvider extends ChangeNotifier {
       Log.e("Failed to get WiFi IP: $e");
       _ip = null;
       notifyListeners();
-      return;
     }
   }
 

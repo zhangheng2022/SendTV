@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:send_tv/core/network/network_service.dart';
 import 'package:send_tv/pages_tv/components/filled_button.dart';
 import 'package:send_tv/pages_tv/components/text_button.dart';
+import 'package:send_tv/pages_tv/drawer_right.dart';
 import 'package:send_tv/providers/network_provider.dart';
 
 class TVHomePage extends StatefulWidget {
@@ -13,12 +14,14 @@ class TVHomePage extends StatefulWidget {
 }
 
 class _TVHomePageState extends State<TVHomePage> {
+  final GlobalKey<ScaffoldState> _ScaffoldKey = GlobalKey<ScaffoldState>();
   final PageController _controller = PageController();
   int _currentIndex = 0;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _ScaffoldKey,
       appBar: AppBar(
         title: Row(
           children: [
@@ -31,7 +34,9 @@ class _TVHomePageState extends State<TVHomePage> {
           TVFilledButton(
             autofocus: false,
             icon: Icon(Icons.settings),
-            onPressed: () async {},
+            onPressed: () {
+              _ScaffoldKey.currentState?.openEndDrawer();
+            },
             child: Text('设置'),
           ),
           const SizedBox(width: 20),
@@ -40,7 +45,7 @@ class _TVHomePageState extends State<TVHomePage> {
       body: Column(
         children: [
           Container(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
             child: Row(
               spacing: 12,
               children: [
@@ -73,6 +78,7 @@ class _TVHomePageState extends State<TVHomePage> {
           ),
         ],
       ),
+      endDrawer: DrawerRight(),
     );
   }
 }

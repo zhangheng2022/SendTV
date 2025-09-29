@@ -36,14 +36,13 @@ class UDPServer {
     }
   }
 
-  /// 启动周期性广播（A 设备执行）
+  /// 启动周期性广播
   void startBroadcast(String deviceName) {
     _broadcastTimer?.cancel();
     _broadcastTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
       final msg = "❤️ 心跳来自 $deviceName @ ${DateTime.now()}";
       final data = utf8.encode(msg);
       _socket?.send(data, multicastAddress, port);
-      Log.d("📡 已广播: $msg");
     });
   }
 
