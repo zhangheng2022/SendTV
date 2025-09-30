@@ -1,4 +1,3 @@
-import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:send_tv/core/network/network_service.dart';
@@ -10,7 +9,6 @@ import 'package:send_tv/utils/logger.dart';
 class NetworkProvider extends ChangeNotifier {
   final NetworkService _service = NetworkService();
   final NetworkInfo _wifiInfo = NetworkInfo();
-  final DeviceInfoPlugin _deviceInfo = DeviceInfoPlugin();
   final UDPServer _udpServer = UDPServer();
 
   bool get isRunning => _service.isRunning;
@@ -42,7 +40,7 @@ class NetworkProvider extends ChangeNotifier {
 
       DeviceInfoResult deviceInfo = await getDeviceInfo();
 
-      _udpServer.startBroadcast(deviceInfo.deviceModel);
+      _udpServer.startBroadcast(deviceInfo);
 
       _ip = await _wifiInfo.getWifiIP();
       Log.d("Service started at $_ip");

@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:send_tv/model/broadcast_info.dart';
+import 'package:send_tv/utils/device_info_helper.dart';
 import 'package:send_tv/utils/logger.dart';
 
 class UDPServer {
@@ -21,13 +23,12 @@ class UDPServer {
       // 监听接收数据
       _socket?.listen((event) {
         if (event == RawSocketEvent.read) {
-          final datagram = _socket?.receive();
-          if (datagram != null) {
-            final dg = _socket!.receive();
-            if (dg != null) {
-              final message = utf8.decode(dg.data);
-              Log.d("📩 收到来自 ${dg.address.address}:${dg.port} -> $message");
-            }
+          final dategram = _socket!.receive();
+          if (dategram != null) {
+            final message = utf8.decode(dategram.data);
+            Log.d(
+              "📩 收到来自 ${dategram.address.address}:${dategram.port} -> $message",
+            );
           }
         }
       });
@@ -37,11 +38,18 @@ class UDPServer {
   }
 
   /// 启动周期性广播
-  void startBroadcast(String deviceName) {
+  void startBroadcast(DeviceInfoResult deviceInfo) {
     _broadcastTimer?.cancel();
     _broadcastTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
-      final msg = "❤️ 心跳来自 $deviceName @ ${DateTime.now()}";
-      final data = utf8.encode(msg);
+      final broadcastData =
+          BroadcastInfo(
+            alias: deviceInfo.deviceModel,
+            deviceModel: deviceInfo.deviceModel,
+            deviceType: deviceInfo.deviceType.name,
+            fingerprint: DateTime.now().millisecondsSinceEpoch.toString(),
+          ).toJson();
+
+      final data = utf8.encode(broadcastData.toString());
       _socket?.send(data, multicastAddress, port);
     });
   }
