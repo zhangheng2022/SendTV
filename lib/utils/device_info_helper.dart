@@ -1,12 +1,10 @@
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
-import 'package:send_tv/model/device_info_result.dart';
 
 Future<DeviceInfoResult> getDeviceInfo() async {
   final plugin = DeviceInfoPlugin();
   DeviceType deviceType;
-  String? deviceModel = 'Unknown';
-  int? androidSdkInt;
+  String deviceModel = 'Unknown';
 
   if (kIsWeb) {
     deviceType = DeviceType.web;
@@ -29,8 +27,6 @@ Future<DeviceInfoResult> getDeviceInfo() async {
       case TargetPlatform.android:
         final deviceInfo = await plugin.androidInfo;
         deviceModel = deviceInfo.model;
-        androidSdkInt = deviceInfo.version.sdkInt;
-
         break;
       case TargetPlatform.iOS:
         final deviceInfo = await plugin.iosInfo;
@@ -51,9 +47,14 @@ Future<DeviceInfoResult> getDeviceInfo() async {
     }
   }
 
-  return DeviceInfoResult(
-    deviceType: deviceType,
-    deviceModel: deviceModel,
-    androidSdkInt: androidSdkInt,
-  );
+  return DeviceInfoResult(deviceType: deviceType, deviceModel: deviceModel);
+}
+
+enum DeviceType { mobile, desktop, web, tv }
+
+class DeviceInfoResult {
+  final DeviceType deviceType;
+  final String deviceModel;
+
+  DeviceInfoResult({required this.deviceType, required this.deviceModel});
 }

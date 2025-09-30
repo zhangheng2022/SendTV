@@ -4,6 +4,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:send_tv/core/network/network_service.dart';
 import 'package:send_tv/core/network/udp_service.dart';
 import 'package:network_info_plus/network_info_plus.dart';
+import 'package:send_tv/utils/device_info_helper.dart';
 import 'package:send_tv/utils/logger.dart';
 
 class NetworkProvider extends ChangeNotifier {
@@ -39,15 +40,15 @@ class NetworkProvider extends ChangeNotifier {
       await _service.start();
       await _udpServer.listenMulticast();
 
-      AndroidDeviceInfo androidInfo = await _deviceInfo.androidInfo;
-      String deviceName = androidInfo.model;
-      _udpServer.startBroadcast(deviceName);
+      DeviceInfoResult deviceInfo = await getDeviceInfo();
+
+      _udpServer.startBroadcast(deviceInfo.deviceModel);
 
       _ip = await _wifiInfo.getWifiIP();
       Log.d("Service started at $_ip");
       notifyListeners();
     } catch (e) {
-      Log.e("Failed to get WiFi IP: $e");
+      Log.e(e);
       _ip = null;
       notifyListeners();
     }
